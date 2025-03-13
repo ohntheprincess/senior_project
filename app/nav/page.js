@@ -15,6 +15,9 @@ export default function NavBar() {
   const clickCalculate = () => {
     router.push("/calculate_page");
   };
+  const clickForm = () => {
+    router.push("/formPage");
+  };
   const backToHome = () => {
     router.push("/");
   };
@@ -48,7 +51,7 @@ export default function NavBar() {
             <button onClick={() => clickCalculate()}>สูตรคำนวณ</button>
           </li>
           <li className="mx-4">
-            <button>แบบทดสอบ</button>
+            <button onClick={() => clickForm()}>แบบทดสอบ</button>
           </li>
         </ul>
       </nav>
