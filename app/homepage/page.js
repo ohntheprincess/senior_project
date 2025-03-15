@@ -11,6 +11,7 @@ export default function HomePage() {
           ที่จะสามารถตอบโจทย์ความต้องการของคุณที่สุด
           ลองใช้เครื่องมือช่วยเลือกของเรา!
         </p>
+        <a href="/formPage">
         <button className="border-2 p-3 mt-12 bg-white rounded-lg w-fit text-sm text-mainblue shadow-lg flex items-center space-x-2">
           <span>ทำแบบทดสอบเลย</span>
           <svg
@@ -27,7 +28,7 @@ export default function HomePage() {
               d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
             />
           </svg>
-        </button>
+        </button></a>
       </div>
       <div>
         <img src="/evcar.jpg" className="h-full"></img>

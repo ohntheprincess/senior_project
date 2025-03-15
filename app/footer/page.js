@@ -3,7 +3,7 @@ import { useState } from "react";
 export default function Footer() {
   const [isModalOpen, setIModalOpen] = useState(false);
   const [emailData, setEmailData] = useState({
-    to: "saowalak.pri@kkumail.com,suebsak.s@kkumail.com",
+    to: "saowalak.pri@kkumail.com,seubsak.s@kkumail.com",
     subject: "",
     text: "",
   });
@@ -97,7 +97,7 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold">ติดต่อเรา</h3>
             <p className="mt-1 text-blue3 text-sm">
-              อีเมล: ap.evcars@gmail.com
+              อีเมล: {process.env.NEXT_PUBLIC_CONTACT_EMAIL}
             </p>
             <button
               className="text-base bg-white text-mainblue rounded p-2 px-3 shadow-md mt-2"

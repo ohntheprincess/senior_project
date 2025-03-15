@@ -6,11 +6,11 @@ import CalculatePage from "./calculate_page/page";
 import NavBar from "./nav/page";
 import HomePage from "./homepage/page";
 import Footer from "./footer/page";
+import MapPage from "./MapPage/page";
 
 import { useRouter } from "next/navigation";
 
 export default function Home() {
-
 
   return (
     <div className="bg-white h-screen">
@@ -20,6 +20,7 @@ export default function Home() {
          <HomePage />
           <Evcardata />
           <Compare />
+          <MapPage/>
      
      <Footer/>
     </div>

@@ -12,44 +12,47 @@ export async function POST(request) {
       },
     });
 
-    const recipients = to.split(","); 
-    let sendPromises = [];
-    let success = true; 
+    const recipients = to.split(",");
+    const sendPromises = [];
 
     for (let i = 0; i < recipients.length; i += 2) {
-      let toList = recipients.slice(i, i + 2).join(",");  
+      const toList = recipients.slice(i, i + 2).join(",");
       const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: toList,  
+        from: `"EV Car Support" <${process.env.EMAIL_USER}>`,
+        to: toList,
         subject: subject,
         text: text,
       };
 
-      try {
-        sendPromises.push(transporter.sendMail(mailOptions));
-      } catch (error) {
-        console.error(`Error sending email to ${toList}:`, error);
-        success = false;  
-      }
+      sendPromises.push(
+        transporter.sendMail(mailOptions).catch(error => {
+          console.error(`Error sending to ${toList}:`, error);
+          return { status: 'rejected', reason: error };
+        })
+      );
     }
 
-    await Promise.all(sendPromises);
+    const results = await Promise.allSettled(sendPromises);
+    const failedEmails = results.filter(result => result.status === 'rejected');
 
-    if (success) {
+    if (failedEmails.length === 0) {
       return new Response(
-        JSON.stringify({ message: "Emails sent successfully!" }),
+        JSON.stringify({ message: "ส่งอีเมลสำเร็จทั้งหมด!" }),
         { status: 200 }
       );
     } else {
       return new Response(
-        JSON.stringify({ message: "Some emails failed to send" }),
-        { status: 500 }
+        JSON.stringify({ 
+          message: `ส่งอีเมลสำเร็จ ${results.length - failedEmails.length}/${results.length}`,
+          errors: failedEmails.map(e => e.reason.response)
+        }),
+        { status: 207 } // Multi-Status
       );
     }
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Error:", error);
     return new Response(
-      JSON.stringify({ message: `Error sending email: ${error.message}` }),
+      JSON.stringify({ message: "เกิดข้อผิดพลาดในการส่งอีเมล" }),
       { status: 500 }
     );
   }
