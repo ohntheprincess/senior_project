@@ -265,19 +265,19 @@ const driveTypes = [
     id: "ระบบขับเคลื่อนล้อหน้า",
     label: "ขับเคลื่อนล้อหน้า",
     description: "เหมาะสำหรับการขับขี่ในเมืองและประหยัดพลังงาน",
-    icon: <Car className="w-10 h-10 text-blue-600" />,
+    icon: <Car className="w-10 h-10 text-mainblue" />,
   },
   {
     id: "ระบบขับเคลื่อนล้อหลัง",
     label: "ขับเคลื่อนล้อหลัง",
     description: "ให้ความรู้สึกสปอร์ตและการทรงตัวที่ดี",
-    icon: <Car className="w-10 h-10 text-blue-600" />,
+    icon: <Car className="w-10 h-10 text-mainblue" />,
   },
   {
     id: "ระบบขับเคลื่อนสี่ล้อแบบอัตโนมัติ",
     label: "ขับเคลื่อน 4 ล้อ",
     description: "เหมาะกับทุกสภาพถนนและให้ความมั่นใจสูงสุด",
-    icon: <Car className="w-10 h-10 text-blue-600" />,
+    icon: <Car className="w-10 h-10 text-mainblue" />,
   },
 ]
 
@@ -638,7 +638,7 @@ export default function CustomForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-creame/30 to-white">
       {/* Help Modal */}
       {showHelpModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -684,7 +684,7 @@ export default function CustomForm() {
             <div className="border-t p-4">
               <button
                 onClick={() => setShowHelpModal(false)}
-                className="w-full px-4 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="w-full px-4 py-2.5 bg-mainblue text-white rounded-md hover:bg-mainblue/80 transition-colors"
               >
                 เข้าใจแล้ว
               </button>
@@ -710,17 +710,17 @@ export default function CustomForm() {
         <header className="text-center mb-8">
           <div className="flex items-center justify-center mb-3">
             <div className="relative w-16 h-16 md:w-20 md:h-20">
-              <div className="absolute inset-0 bg-blue-600 rounded-full opacity-20 animate-ping"></div>
-              <div className="relative flex items-center justify-center bg-blue-600 text-white rounded-full w-16 h-16 md:w-20 md:h-20">
+              <div className="absolute inset-0 bg-mainblue rounded-full opacity-20 animate-ping"></div>
+              <div className="relative flex items-center justify-center bg-mainblue text-white rounded-full w-16 h-16 md:w-20 md:h-20">
                 <Car className="w-8 h-8 md:w-10 md:h-10" />
               </div>
             </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-blue-800 mb-2">แบบทดสอบรถยนต์ไฟฟ้าที่เหมาะกับคุณ</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-mainblue mb-2">แบบทดสอบรถยนต์ไฟฟ้าที่เหมาะกับคุณ</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">ตอบคำถามเพื่อค้นหารถยนต์ไฟฟ้าที่เหมาะกับไลฟ์สไตล์และความต้องการของคุณ</p>
           <button
             onClick={() => setShowHelpModal(true)}
-            className="mt-3 inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+            className="mt-3 inline-flex items-center text-mainblue hover:text-mainblue/80 transition-colors"
           >
             <Info className="w-4 h-4 mr-1" />
             <span>คำแนะนำการใช้งาน</span>
@@ -732,22 +732,22 @@ export default function CustomForm() {
           <div className="flex items-center gap-4 w-full">
             <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
               <div
-                className="bg-blue-600 h-3 rounded-full transition-all duration-700 ease-out"
+                className="bg-mainblue h-3 rounded-full transition-all duration-700 ease-out"
                 style={{ width: `${progressPercentage}%` }}
               ></div>
             </div>
-            <div className="text-sm font-medium text-blue-700 whitespace-nowrap">{progressPercentage}%</div>
+            <div className="text-sm font-medium text-mainblue whitespace-nowrap">{progressPercentage}%</div>
           </div>
 
           {/* Step indicators */}
           <div className="flex justify-between mt-2 text-xs text-gray-500">
-            <div className={`${step === "welcome" || step === "profile" ? "text-blue-700 font-medium" : ""}`}>
+            <div className={`${step === "welcome" || step === "profile" ? "text-mainblue font-medium" : ""}`}>
               ข้อมูลส่วนตัว
             </div>
-            <div className={`${step === "questions" ? "text-blue-700 font-medium" : ""}`}>คำถาม</div>
-            <div className={`${step === "seats" ? "text-blue-700 font-medium" : ""}`}>จำนวนที่นั่ง</div>
-            <div className={`${step === "drive" ? "text-blue-700 font-medium" : ""}`}>ระบบขับเคลื่อน</div>
-            <div className={`${step === "summary" ? "text-blue-700 font-medium" : ""}`}>สรุปผล</div>
+            <div className={`${step === "questions" ? "text-mainblue font-medium" : ""}`}>คำถาม</div>
+            <div className={`${step === "seats" ? "text-mainblue font-medium" : ""}`}>จำนวนที่นั่ง</div>
+            <div className={`${step === "drive" ? "text-mainblue font-medium" : ""}`}>ระบบขับเคลื่อน</div>
+            <div className={`${step === "summary" ? "text-mainblue font-medium" : ""}`}>สรุปผล</div>
           </div>
         </div>
 
@@ -763,7 +763,7 @@ export default function CustomForm() {
                 variants={variants}
                 className="bg-white rounded-xl shadow-lg overflow-hidden"
               >
-                <div className="relative h-48 bg-gradient-to-r from-blue-600 to-blue-400 flex items-center justify-center">
+                <div className="relative h-48 bg-gradient-to-r from-mainblue to-mainblue/70 flex items-center justify-center">
                   <div className="absolute inset-0 opacity-20 bg-pattern"></div>
                   <div className="relative z-10 text-white text-center px-6">
                     <h2 className="text-2xl font-bold mb-2">ค้นหารถยนต์ไฟฟ้าที่ใช่สำหรับคุณ</h2>
@@ -774,42 +774,42 @@ export default function CustomForm() {
                 <div className="p-6 md:p-8">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                     <motion.div
-                      className="bg-blue-50 p-4 rounded-lg flex flex-col items-center text-center"
+                      className="bg-creame/50 p-4 rounded-lg flex flex-col items-center text-center"
                       variants={cardVariants}
                       initial="hidden"
                       animate="visible"
                       custom={0}
                     >
-                      <div className="bg-blue-100 p-3 rounded-full mb-3">
-                        <Sparkles className="w-6 h-6 text-blue-600" />
+                      <div className="bg-creame p-3 rounded-full mb-3">
+                        <Sparkles className="w-6 h-6 text-mainblue" />
                       </div>
                       <h3 className="font-medium mb-1">แบบทดสอบที่ปรับแต่ง</h3>
                       <p className="text-sm text-gray-600">วิเคราะห์ความต้องการและไลฟ์สไตล์ของคุณ</p>
                     </motion.div>
 
                     <motion.div
-                      className="bg-blue-50 p-4 rounded-lg flex flex-col items-center text-center"
+                      className="bg-creame/50 p-4 rounded-lg flex flex-col items-center text-center"
                       variants={cardVariants}
                       initial="hidden"
                       animate="visible"
                       custom={1}
                     >
-                      <div className="bg-blue-100 p-3 rounded-full mb-3">
-                        <Shield className="w-6 h-6 text-blue-600" />
+                      <div className="bg-creame p-3 rounded-full mb-3">
+                        <Shield className="w-6 h-6 text-mainblue" />
                       </div>
                       <h3 className="font-medium mb-1">ข้อมูลที่เชื่อถือได้</h3>
                       <p className="text-sm text-gray-600">ข้อมูลจากผู้เชี่ยวชาญและแหล่งที่เชื่อถือได้</p>
                     </motion.div>
 
                     <motion.div
-                      className="bg-blue-50 p-4 rounded-lg flex flex-col items-center text-center"
+                      className="bg-creame/50 p-4 rounded-lg flex flex-col items-center text-center"
                       variants={cardVariants}
                       initial="hidden"
                       animate="visible"
                       custom={2}
                     >
-                      <div className="bg-blue-100 p-3 rounded-full mb-3">
-                        <MapPin className="w-6 h-6 text-blue-600" />
+                      <div className="bg-creame p-3 rounded-full mb-3">
+                        <MapPin className="w-6 h-6 text-mainblue" />
                       </div>
                       <h3 className="font-medium mb-1">ผลลัพธ์ที่แม่นยำ</h3>
                       <p className="text-sm text-gray-600">แนะนำรถยนต์ไฟฟ้าที่เหมาะสมกับคุณมากที่สุด</p>
@@ -819,7 +819,7 @@ export default function CustomForm() {
                   <div className="flex flex-col items-center">
                     <button
                       onClick={startForm}
-                      className="w-full md:w-auto px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 mb-4"
+                      className="w-full md:w-auto px-8 py-3 bg-mainblue text-white rounded-lg hover:bg-mainblue/80 transition-colors flex items-center justify-center gap-2 mb-4"
                     >
                       เริ่มแบบทดสอบ
                       <ChevronRight className="w-5 h-5" />
@@ -841,10 +841,10 @@ export default function CustomForm() {
                 className="bg-white rounded-xl shadow-lg p-6 md:p-8"
               >
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="bg-blue-100 p-2 rounded-full">
-                    <User className="w-6 h-6 text-blue-600" />
+                  <div className="bg-creame p-2 rounded-full">
+                    <User className="w-6 h-6 text-mainblue" />
                   </div>
-                  <h2 className="text-xl font-semibold text-blue-800">ข้อมูลส่วนตัว</h2>
+                  <h2 className="text-xl font-semibold text-mainblue">ข้อมูลส่วนตัว</h2>
                 </div>
 
                 <p className="text-gray-600 mb-6">กรุณากรอกข้อมูลส่วนตัวเพื่อการวิเคราะห์ที่แม่นยำยิ่งขึ้น</p>
@@ -853,7 +853,7 @@ export default function CustomForm() {
                   {/* Gender */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700 flex items-center">
-                      <User className="w-4 h-4 mr-1 text-blue-500" />
+                      <User className="w-4 h-4 mr-1 text-mainblue" />
                       เพศ
                     </label>
                     <div className="grid grid-cols-3 gap-3">
@@ -863,8 +863,8 @@ export default function CustomForm() {
                           onClick={() => handleProfileChange("gender", option.value)}
                           className={`flex items-center justify-center p-3 rounded-lg transition-all ${
                             userProfile.gender === option.value
-                              ? "bg-blue-600 text-white"
-                              : "bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                              ? "bg-mainblue text-white"
+                              : "bg-white border border-gray-300 hover:border-mainblue hover:bg-creame/50"
                           }`}
                         >
                           {option.label}
@@ -876,7 +876,7 @@ export default function CustomForm() {
                   {/* Age Range */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700 flex items-center">
-                      <Users className="w-4 h-4 mr-1 text-blue-500" />
+                      <Users className="w-4 h-4 mr-1 text-mainblue" />
                       ช่วงอายุ
                     </label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -886,8 +886,8 @@ export default function CustomForm() {
                           onClick={() => handleProfileChange("age_range", option.value)}
                           className={`flex items-center justify-center p-3 rounded-lg transition-all ${
                             userProfile.age_range === option.value
-                              ? "bg-blue-600 text-white"
-                              : "bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                              ? "bg-mainblue text-white"
+                              : "bg-white border border-gray-300 hover:border-mainblue hover:bg-creame/50"
                           }`}
                         >
                           {option.label}
@@ -899,7 +899,7 @@ export default function CustomForm() {
                   {/* Occupation */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700 flex items-center">
-                      <Briefcase className="w-4 h-4 mr-1 text-blue-500" />
+                      <Briefcase className="w-4 h-4 mr-1 text-mainblue" />
                       อาชีพ
                     </label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -909,8 +909,8 @@ export default function CustomForm() {
                           onClick={() => handleProfileChange("occupation", option.value)}
                           className={`flex items-center justify-center p-3 rounded-lg transition-all ${
                             userProfile.occupation === option.value
-                              ? "bg-blue-600 text-white"
-                              : "bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                              ? "bg-mainblue text-white"
+                              : "bg-white border border-gray-300 hover:border-mainblue hover:bg-creame/50"
                           }`}
                         >
                           {option.label}
@@ -922,7 +922,7 @@ export default function CustomForm() {
                   {/* Marital Status */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700 flex items-center">
-                      <Heart className="w-4 h-4 mr-1 text-blue-500" />
+                      <Heart className="w-4 h-4 mr-1 text-mainblue" />
                       สถานภาพ
                     </label>
                     <div className="grid grid-cols-2 gap-3">
@@ -932,8 +932,8 @@ export default function CustomForm() {
                           onClick={() => handleProfileChange("marital_status", option.value)}
                           className={`flex items-center justify-center p-3 rounded-lg transition-all ${
                             userProfile.marital_status === option.value
-                              ? "bg-blue-600 text-white"
-                              : "bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                              ? "bg-mainblue text-white"
+                              : "bg-white border border-gray-300 hover:border-mainblue hover:bg-creame/50"
                           }`}
                         >
                           {option.label}
@@ -945,7 +945,7 @@ export default function CustomForm() {
                   {/* Family Status */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700 flex items-center">
-                      <Home className="w-4 h-4 mr-1 text-blue-500" />
+                      <Home className="w-4 h-4 mr-1 text-mainblue" />
                       สถานะครอบครัว
                     </label>
                     <div className="grid grid-cols-2 gap-3">
@@ -955,8 +955,8 @@ export default function CustomForm() {
                           onClick={() => handleProfileChange("family_status", option.value)}
                           className={`flex items-center justify-center p-3 rounded-lg transition-all ${
                             userProfile.family_status === option.value
-                              ? "bg-blue-600 text-white"
-                              : "bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                              ? "bg-mainblue text-white"
+                              : "bg-white border border-gray-300 hover:border-mainblue hover:bg-creame/50"
                           }`}
                         >
                           {option.label}
@@ -968,7 +968,7 @@ export default function CustomForm() {
                   {/* Income Range */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700 flex items-center">
-                      <DollarSign className="w-4 h-4 mr-1 text-blue-500" />
+                      <DollarSign className="w-4 h-4 mr-1 text-mainblue" />
                       ช่วงรายได้
                     </label>
                     <div className="grid grid-cols-2 gap-3">
@@ -978,8 +978,8 @@ export default function CustomForm() {
                           onClick={() => handleProfileChange("income_range", option.value)}
                           className={`flex items-center justify-center p-3 rounded-lg transition-all ${
                             userProfile.income_range === option.value
-                              ? "bg-blue-600 text-white"
-                              : "bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                              ? "bg-mainblue text-white"
+                              : "bg-white border border-gray-300 hover:border-mainblue hover:bg-creame/50"
                           }`}
                         >
                           {option.label}
@@ -991,7 +991,7 @@ export default function CustomForm() {
                   {/* Vehicle Status */}
                   <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700 flex items-center">
-                      <Car className="w-4 h-4 mr-1 text-blue-500" />
+                      <Car className="w-4 h-4 mr-1 text-mainblue" />
                       คุณมีรถยนต์แล้วหรือยัง
                     </label>
                     <div className="grid grid-cols-2 gap-3">
@@ -1001,8 +1001,8 @@ export default function CustomForm() {
                           onClick={() => handleProfileChange("vehicle_status", option.value)}
                           className={`flex items-center justify-center p-3 rounded-lg transition-all ${
                             userProfile.vehicle_status === option.value
-                              ? "bg-blue-600 text-white"
-                              : "bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                              ? "bg-mainblue text-white"
+                              : "bg-white border border-gray-300 hover:border-mainblue hover:bg-creame/50"
                           }`}
                         >
                           {option.label}
@@ -1014,7 +1014,7 @@ export default function CustomForm() {
                   <div className="flex justify-between pt-4">
                     <button
                       onClick={handleBack}
-                      className="flex items-center gap-1 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="flex items-center gap-1 px-4 py-2 text-mainblue hover:bg-creame/70 rounded-lg transition-colors"
                     >
                       <ChevronLeft className="w-4 h-4" />
                       ย้อนกลับ
@@ -1026,7 +1026,7 @@ export default function CustomForm() {
                       className={`flex items-center gap-1 px-6 py-2 rounded-lg transition-colors ${
                         !isProfileComplete
                           ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700"
+                          : "bg-mainblue text-white hover:bg-mainblue/80"
                       }`}
                     >
                       ถัดไป
@@ -1049,14 +1049,14 @@ export default function CustomForm() {
               >
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="bg-blue-100 p-2 rounded-full">{currentFactor.icon}</div>
+                    <div className="bg-creame p-2 rounded-full">{currentFactor.icon}</div>
                     <div>
-                      <h2 className="text-xl font-semibold text-blue-800">{currentFactor.title}</h2>
+                      <h2 className="text-xl font-semibold text-mainblue">{currentFactor.title}</h2>
                       <p className="text-sm text-gray-500">{currentFactor.description}</p>
                     </div>
                   </div>
 
-                  <div className="bg-blue-50 p-5 rounded-lg">
+                  <div className="bg-creame/50 p-5 rounded-lg">
                     <h3 className="text-lg font-medium mb-6 text-center">{currentQuestion.label}</h3>
 
                     <div className="grid grid-cols-1 gap-3">
@@ -1066,8 +1066,8 @@ export default function CustomForm() {
                           onClick={() => handleSelect(option.score)}
                           className={`flex items-center justify-between p-3 rounded-lg transition-all ${
                             weights[currentFactor.name][currentQuestionIndex] === option.score
-                              ? "bg-blue-600 text-white"
-                              : "bg-white border border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+                              ? "bg-mainblue text-white"
+                              : "bg-white border border-gray-300 hover:border-mainblue hover:bg-creame/50"
                           }`}
                         >
                           <span>{option.label}</span>
@@ -1082,7 +1082,7 @@ export default function CustomForm() {
                   <div className="flex justify-between mt-6">
                     <button
                       onClick={handleBack}
-                      className="flex items-center gap-1 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="flex items-center gap-1 px-4 py-2 text-mainblue hover:bg-creame/70 rounded-lg transition-colors"
                     >
                       <ChevronLeft className="w-4 h-4" />
                       ย้อนกลับ
@@ -1107,11 +1107,11 @@ export default function CustomForm() {
               >
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <Users className="w-6 h-6 text-blue-600" />
+                    <div className="bg-creame p-2 rounded-full">
+                      <Users className="w-6 h-6 text-mainblue" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-blue-800">เลือกจำนวนที่นั่ง</h2>
+                      <h2 className="text-xl font-semibold text-mainblue">เลือกจำนวนที่นั่ง</h2>
                       <p className="text-sm text-gray-500">จำนวนที่นั่งมีผลต่อขนาดและประเภทของรถยนต์ไฟฟ้า</p>
                     </div>
                   </div>
@@ -1123,18 +1123,18 @@ export default function CustomForm() {
                         onClick={() => setNumSeats(option.value)}
                         className={`flex flex-col items-center p-6 rounded-lg border-2 transition-all relative ${
                           numSeats === option.value
-                            ? "border-blue-600 bg-blue-50"
-                            : "border-gray-200 hover:border-blue-300"
+                            ? "border-mainblue bg-creame/50"
+                            : "border-gray-200 hover:border-mainblue/70"
                         }`}
                       >
-                        <div className="flex items-center justify-center bg-blue-100 rounded-full w-16 h-16 mb-3">
-                          <Users className="w-8 h-8 text-blue-600" />
+                        <div className="flex items-center justify-center bg-creame p-3 rounded-full w-16 h-16 mb-3">
+                          <Users className="w-8 h-8 text-mainblue" />
                         </div>
                         <h3 className="text-lg font-medium">{option.label}</h3>
                         <p className="text-sm text-gray-500 mt-1">{option.description}</p>
 
                         {numSeats === option.value && (
-                          <div className="absolute top-3 right-3 bg-blue-600 text-white rounded-full p-1">
+                          <div className="absolute top-3 right-3 bg-mainblue text-white rounded-full p-1">
                             <Check className="w-4 h-4" />
                           </div>
                         )}
@@ -1145,7 +1145,7 @@ export default function CustomForm() {
                   <div className="flex justify-between mt-6">
                     <button
                       onClick={handleBack}
-                      className="flex items-center gap-1 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="flex items-center gap-1 px-4 py-2 text-mainblue hover:bg-creame/70 rounded-lg transition-colors"
                     >
                       <ChevronLeft className="w-4 h-4" />
                       ย้อนกลับ
@@ -1157,7 +1157,7 @@ export default function CustomForm() {
                       className={`flex items-center gap-1 px-6 py-2 rounded-lg transition-colors ${
                         numSeats === null
                           ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700"
+                          : "bg-mainblue text-white hover:bg-mainblue/80"
                       }`}
                     >
                       ถัดไป
@@ -1180,11 +1180,11 @@ export default function CustomForm() {
               >
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <Car className="w-6 h-6 text-blue-600" />
+                    <div className="bg-creame p-2 rounded-full">
+                      <Car className="w-6 h-6 text-mainblue" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-blue-800">เลือกระบบขับเคลื่อน</h2>
+                      <h2 className="text-xl font-semibold text-mainblue">เลือกระบบขับเคลื่อน</h2>
                       <p className="text-sm text-gray-500">ระบบขับเคลื่อนมีผลต่อสมรรถนะและความรู้สึกในการขับขี่</p>
                     </div>
                   </div>
@@ -1195,10 +1195,12 @@ export default function CustomForm() {
                         key={type.id}
                         onClick={() => setDriveType(type.id)}
                         className={`flex items-center p-4 rounded-lg border-2 transition-all ${
-                          driveType === type.id ? "border-blue-600 bg-blue-50" : "border-gray-200 hover:border-blue-300"
+                          driveType === type.id
+                            ? "border-mainblue bg-creame/50"
+                            : "border-gray-200 hover:border-mainblue/70"
                         }`}
                       >
-                        <div className="flex items-center justify-center bg-blue-100 rounded-full w-12 h-12 mr-4">
+                        <div className="flex items-center justify-center bg-creame p-3 rounded-full w-12 h-12 mr-4">
                           {type.icon}
                         </div>
 
@@ -1208,7 +1210,7 @@ export default function CustomForm() {
                         </div>
 
                         {driveType === type.id && (
-                          <div className="ml-auto bg-blue-600 text-white rounded-full p-1">
+                          <div className="ml-auto bg-mainblue text-white rounded-full p-1">
                             <Check className="w-4 h-4" />
                           </div>
                         )}
@@ -1219,7 +1221,7 @@ export default function CustomForm() {
                   <div className="flex justify-between mt-6">
                     <button
                       onClick={handleBack}
-                      className="flex items-center gap-1 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="flex items-center gap-1 px-4 py-2 text-mainblue hover:bg-creame/70 rounded-lg transition-colors"
                     >
                       <ChevronLeft className="w-4 h-4" />
                       ย้อนกลับ
@@ -1231,7 +1233,7 @@ export default function CustomForm() {
                       className={`flex items-center gap-1 px-6 py-2 rounded-lg transition-colors ${
                         driveType === null
                           ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                          : "bg-blue-600 text-white hover:bg-blue-700"
+                          : "bg-mainblue text-white hover:bg-mainblue/80"
                       }`}
                     >
                       ถัดไป
@@ -1254,16 +1256,16 @@ export default function CustomForm() {
               >
                 <div className="space-y-6">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="bg-green-100 p-2 rounded-full">
-                      <Check className="w-6 h-6 text-green-600" />
+                    <div className="bg-creame p-2 rounded-full">
+                      <Check className="w-6 h-6 text-mainblue" />
                     </div>
-                    <h2 className="text-xl font-semibold text-blue-800">สรุปข้อมูลของคุณ</h2>
+                    <h2 className="text-xl font-semibold text-mainblue">สรุปข้อมูลของคุณ</h2>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-creame/50 p-4 rounded-lg">
                       <h3 className="font-medium mb-2 flex items-center">
-                        <User className="w-5 h-5 mr-2 text-blue-600" />
+                        <User className="w-5 h-5 mr-2 text-mainblue" />
                         ข้อมูลส่วนตัว
                       </h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
@@ -1311,9 +1313,9 @@ export default function CustomForm() {
                       </div>
                     </div>
 
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-creame/50 p-4 rounded-lg">
                       <h3 className="font-medium mb-2 flex items-center">
-                        <Zap className="w-5 h-5 mr-2 text-blue-600" />
+                        <Zap className="w-5 h-5 mr-2 text-mainblue" />
                         ความชอบและไลฟ์สไตล์
                       </h3>
                       <p className="text-sm text-gray-600">
@@ -1321,9 +1323,9 @@ export default function CustomForm() {
                       </p>
                     </div>
 
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-creame/50 p-4 rounded-lg">
                       <h3 className="font-medium mb-2 flex items-center">
-                        <Users className="w-5 h-5 mr-2 text-blue-600" />
+                        <Users className="w-5 h-5 mr-2 text-mainblue" />
                         จำนวนที่นั่ง
                       </h3>
                       <p className="text-sm text-gray-600">
@@ -1334,9 +1336,9 @@ export default function CustomForm() {
                       </p>
                     </div>
 
-                    <div className="bg-blue-50 p-4 rounded-lg">
+                    <div className="bg-creame/50 p-4 rounded-lg">
                       <h3 className="font-medium mb-2 flex items-center">
-                        <Car className="w-5 h-5 mr-2 text-blue-600" />
+                        <Car className="w-5 h-5 mr-2 text-mainblue" />
                         ระบบขับเคลื่อน
                       </h3>
                       <p className="text-sm text-gray-600">
@@ -1350,7 +1352,7 @@ export default function CustomForm() {
                   <div className="flex justify-between mt-8">
                     <button
                       onClick={handleBack}
-                      className="flex items-center gap-1 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="flex items-center gap-1 px-4 py-2 text-mainblue hover:bg-creame/70 rounded-lg transition-colors"
                     >
                       <ChevronLeft className="w-4 h-4" />
                       ย้อนกลับ
@@ -1362,7 +1364,7 @@ export default function CustomForm() {
                       className={`flex items-center gap-2 px-8 py-3 rounded-lg transition-colors ${
                         !isFormComplete || isSubmitting
                           ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                          : "bg-green-600 text-white hover:bg-green-700"
+                          : "bg-mainblue text-white hover:bg-mainblue/80"
                       }`}
                     >
                       {isSubmitting ? (

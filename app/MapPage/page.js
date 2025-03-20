@@ -40,6 +40,7 @@ export default function MapPage() {
   const [powerCosts, setPowerCosts] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [selectedDistributor, setSelectedDistributor] = useState("")
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -124,6 +125,11 @@ export default function MapPage() {
     [stations],
   )
 
+  const distributors = useMemo(
+    () => [...new Set(stations.map((s) => s.Distributor))].filter(Boolean).sort(),
+    [stations],
+  )
+
   // ระบบกรองข้อมูล
   useEffect(() => {
     let filtered = stations
@@ -153,6 +159,10 @@ export default function MapPage() {
       )
     }
 
+    if (selectedDistributor) {
+      filtered = filtered.filter((s) => s.Distributor === selectedDistributor)
+    }
+
     setFilteredStations(filtered)
 
     // If we have filtered results and a map reference, fit bounds to show all markers
@@ -163,7 +173,16 @@ export default function MapPage() {
       })
       mapRef.fitBounds(bounds)
     }
-  }, [connectionType, selectedProvince, selectedDistrict, selectedSubdistrict, selectedPowers, stations, mapRef])
+  }, [
+    connectionType,
+    selectedProvince,
+    selectedDistrict,
+    selectedSubdistrict,
+    selectedPowers,
+    selectedDistributor,
+    stations,
+    mapRef,
+  ])
 
   useEffect(() => {
     fetchStations()
@@ -180,20 +199,21 @@ export default function MapPage() {
     setSelectedDistrict("")
     setSelectedSubdistrict("")
     setSelectedPowers([])
+    setSelectedDistributor("")
   }, [])
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen)
   }
 
-  // ฟังก์ชันหาค่าไฟฟ้าตามกำลังไฟ
-  const getPowerCostByPower = (power) => {
+  // ฟังก์ชันหาค่าไฟฟ้าตามกำลังไฟและผู้ให้บริการ
+  const getPowerCostByPowerAndDistributor = (power, distributor) => {
     if (!powerCosts || powerCosts.length === 0) return null
 
-    // หาค่าไฟฟ้าที่ตรงกับกำลังไฟที่ระบุ
+    // หาค่าไฟฟ้าที่ตรงกับกำลังไฟและผู้ให้บริการที่ระบุ
     return powerCosts.find((cost) => {
       const powerValue = Number.parseInt(cost.Power)
-      return powerValue === power
+      return powerValue === power && cost.Distributor === distributor
     })
   }
 
@@ -211,7 +231,7 @@ export default function MapPage() {
           <span>Off-Peak (บาท/หน่วย)</span>
         </div>
         {station.powers.map((powerInfo, index) => {
-          const powerCost = getPowerCostByPower(powerInfo.power)
+          const powerCost = getPowerCostByPowerAndDistributor(powerInfo.power, station.Distributor)
           if (!powerCost) return null
 
           return (
@@ -231,45 +251,15 @@ export default function MapPage() {
   }
 
   if (!isLoaded) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">กำลังโหลดแผนที่...</p>
-        </div>
-      </div>
-    )
+    return <LoadingScreen message="กำลังโหลดแผนที่..." />
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">กำลังโหลดข้อมูลสถานีชาร์จ...</p>
-        </div>
-      </div>
-    )
+    return <LoadingScreen message="กำลังโหลดข้อมูลสถานีชาร์จ..." />
   }
 
   if (error) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <div className="text-center bg-white p-8 rounded-lg shadow-md max-w-md">
-          <div className="text-red-500 mb-4">
-            <X size={48} className="mx-auto" />
-          </div>
-          <h2 className="text-xl font-bold text-gray-800 mb-2">เกิดข้อผิดพลาด</h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
-          >
-            ลองใหม่อีกครั้ง
-          </button>
-        </div>
-      </div>
-    )
+    return <ErrorScreen error={error} />
   }
 
   return (
@@ -291,7 +281,7 @@ export default function MapPage() {
               <ChevronDown size={16} className={`transition-transform ${isFilterOpen ? "rotate-180" : ""}`} />
             </button>
 
-            {(connectionType || selectedProvince || selectedPowers.length > 0) && (
+            {(connectionType || selectedProvince || selectedPowers.length > 0 || selectedDistributor) && (
               <button
                 onClick={resetFilters}
                 className="flex items-center gap-1 bg-red-50 text-red-600 px-3 py-2 rounded-lg hover:bg-red-100 transition-colors"
@@ -306,7 +296,7 @@ export default function MapPage() {
         {/* Filter Panel */}
         {isFilterOpen && (
           <div className="bg-white rounded-xl shadow-md p-4 mb-6 transition-all">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">จังหวัด</label>
                 <select
@@ -375,6 +365,22 @@ export default function MapPage() {
                   {allConnectionTypes.map((t, i) => (
                     <option key={i} value={t}>
                       {t}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">ผู้ให้บริการ</label>
+                <select
+                  value={selectedDistributor}
+                  onChange={(e) => setSelectedDistributor(e.target.value)}
+                  className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                >
+                  <option value="">ทั้งหมด</option>
+                  {distributors.map((d, i) => (
+                    <option key={i} value={d}>
+                      {d}
                     </option>
                   ))}
                 </select>
@@ -456,28 +462,50 @@ export default function MapPage() {
             {selectedStation && (
               <InfoWindow position={selectedStation.location} onCloseClick={() => setSelectedStation(null)}>
                 <div className="p-2 min-w-[320px] max-w-[400px]">
-                  <h3 className="font-bold text-lg mb-1 text-green-700">{selectedStation.displayName}</h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    {selectedStation.logo_url ? (
+                      <div className="w-10 h-10 relative flex-shrink-0">
+                        {/* Using regular img tag instead of Next.js Image component */}
+                        <img
+                          src={selectedStation.logo_url || "/placeholder.svg"}
+                          alt={selectedStation.Distributor || "Logo"}
+                          className="w-10 h-10 object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Zap size={20} className="text-green-500" />
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="font-bold text-lg text-green-700">{selectedStation.displayName}</h3>
+                      <span className="text-xs px-2 py-0.5 bg-gray-100 rounded-full">
+                        {selectedStation.Distributor || "ไม่ระบุผู้ให้บริการ"}
+                      </span>
+                    </div>
+                  </div>
+
                   <p className="text-gray-600 text-sm">{selectedStation.Address}</p>
                   <p className="text-gray-600 text-sm">
                     {selectedStation.Subdistrict}, {selectedStation.District}, {selectedStation.Province}
                   </p>
 
-                  <div className="mt-3 pt-2 border-t border-gray-100">
-                    <p className="font-medium text-sm flex items-center gap-1">
-                      <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs">
-                        ประเภทการชาร์จ
-                      </span>
-                    </p>
-                    <p className="text-gray-700 mt-1">
+                  <div className="my-3 border-t border-gray-100 pt-3"></div>
+
+                  <div>
+                    <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs mb-2 inline-block">
+                      ประเภทการชาร์จ
+                    </span>
+                    <p className="text-gray-700">
                       {selectedStation.connectionTypes.map((ct) => `${ct.type} (${ct.count})`).join(", ") || "-"}
                     </p>
                   </div>
 
                   <div className="mt-3">
-                    <p className="font-medium text-sm flex items-center gap-1">
-                      <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs">กำลังการชาร์จ</span>
-                    </p>
-                    <div className="flex flex-wrap gap-1 mt-1">
+                    <span className="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs mb-2 inline-block">
+                      กำลังการชาร์จ
+                    </span>
+                    <div className="flex flex-wrap gap-1">
                       {[
                         { label: "25kW", value: selectedStation.power25 },
                         { label: "50kW", value: selectedStation.power50 },
@@ -495,23 +523,23 @@ export default function MapPage() {
                   </div>
 
                   {/* ส่วนแสดงค่าไฟฟ้า */}
-                  <div className="mt-3 pt-2 border-t border-gray-100">
-                    <p className="font-medium text-sm flex items-center gap-1 mb-2">
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-1 mb-2">
                       <DollarSign size={14} className="text-green-600" />
                       <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs">อัตราค่าไฟฟ้า</span>
                       <Clock size={14} className="ml-1 text-blue-600" />
-                    </p>
+                    </div>
                     {renderPowerCostInfo(selectedStation)}
                   </div>
 
-                  <div className="mt-3 pt-2 border-t border-gray-100">
+                  <div className="mt-3 pt-3 border-t border-gray-100">
                     <a
                       href={`https://www.google.com/maps?q=${selectedStation.Latitude},${selectedStation.Longitude}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline text-sm inline-flex items-center"
+                      className="block w-full text-center bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg transition-colors text-sm"
                     >
-                      <MapPin size={14} className="mr-1" />
+                      <MapPin size={14} className="inline-block mr-1" />
                       นำทางด้วย Google Maps
                     </a>
                   </div>
@@ -520,6 +548,37 @@ export default function MapPage() {
             )}
           </GoogleMap>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function LoadingScreen({ message }) {
+  return (
+    <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500 mx-auto"></div>
+        <p className="mt-4 text-gray-600">{message}</p>
+      </div>
+    </div>
+  )
+}
+
+function ErrorScreen({ error }) {
+  return (
+    <div className="flex items-center justify-center h-screen bg-gray-50">
+      <div className="text-center bg-white p-8 rounded-lg shadow-md max-w-md">
+        <div className="text-red-500 mb-4">
+          <X size={48} className="mx-auto" />
+        </div>
+        <h2 className="text-xl font-bold text-gray-800 mb-2">เกิดข้อผิดพลาด</h2>
+        <p className="text-gray-600 mb-4">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+        >
+          ลองใหม่อีกครั้ง
+        </button>
       </div>
     </div>
   )

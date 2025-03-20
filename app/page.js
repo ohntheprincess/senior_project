@@ -7,6 +7,7 @@ import NavBar from "./nav/page";
 import HomePage from "./homepage/page";
 import Footer from "./footer/page";
 import MapPage from "./MapPage/page";
+import Dashboard from "./dashboardPage/page";
 
 import { useRouter } from "next/navigation";
 
@@ -18,6 +19,7 @@ export default function Home() {
 
 
          <HomePage />
+         <Dashboard />
           <Evcardata />
           <Compare />
           <MapPage/>

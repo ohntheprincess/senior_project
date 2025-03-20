@@ -26,8 +26,10 @@ export async function GET(request) {
         \`360kW\` AS power360,
         \`AC Type 2\` AS acType2,
         CCS2,
-        CHAdeMO
-      FROM \`bit15-ev-decision-support.EV_Dataset.PEA_VOLTA\`
+        CHAdeMO,
+        Distributor,
+        logo_url
+      FROM \`bit15-ev-decision-support.EV_Dataset.ChargingLocation\`
     `;
 
     const options = {
