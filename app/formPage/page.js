@@ -311,6 +311,7 @@ const occupationOptions = [
   { value: "self-employed", label: "ธุรกิจส่วนตัว", icon: <Briefcase className="w-5 h-5" /> },
   { value: "unemployed", label: "ว่างงาน", icon: <Briefcase className="w-5 h-5" /> },
   { value: "retired", label: "เกษียณ", icon: <Briefcase className="w-5 h-5" /> },
+  { value: "officer", label: "ข้าราชการ", icon: <Briefcase className="w-5 h-5" /> },
 ]
 
 const maritalOptions = [
