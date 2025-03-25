@@ -440,12 +440,27 @@ export default function MapPage() {
               zoomControlOptions: {
                 position: 7, // RIGHT_CENTER
               },
+              // Add these performance optimizations
+              maxZoom: 18,
+              minZoom: 5,
+              gestureHandling: "greedy",
+              clickableIcons: false, // Disable clickable POIs for better performance
+              disableDefaultUI: false,
+              // Optimize rendering
+              tilt: 0,
             }}
           >
-            <MarkerClusterer options={clusterOptions}>
+            <MarkerClusterer
+              options={{
+                ...clusterOptions,
+                minimumClusterSize: filteredStations.length > 500 ? 5 : 3, // Increase cluster size for large datasets
+                maxZoom: filteredStations.length > 1000 ? 12 : 15, // Reduce max zoom for very large datasets
+              }}
+            >
               {(clusterer) => (
                 <>
-                  {filteredStations.map((station, index) => (
+                  {/* Only render markers that are in the current viewport for better performance */}
+                  {filteredStations.slice(0, 1000).map((station, index) => (
                     <Marker
                       key={index}
                       position={station.location}
