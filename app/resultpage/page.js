@@ -114,7 +114,7 @@ export default function ResultPage() {
         console.log("Form data:", formData)
 
         try {
-          const res = await fetch("http://127.0.0.1:8080/handleSubmit", {
+          const res = await fetch("https://ev-model-api-177773968862.asia-southeast1.run.app/handleSubmit", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

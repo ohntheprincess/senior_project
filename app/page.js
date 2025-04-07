@@ -22,7 +22,6 @@ export default function Home() {
          <Dashboard />
           <Evcardata />
           <Compare />
-          <MapPage/>
      
      <Footer/>
     </div>

@@ -135,6 +135,7 @@ def create_hybrid_weights(user_weights, cluster_id):
             # อัพเดทค่าจาก Query เฉพาะคอลัมน์ที่มีข้อมูล
             new_weights = result.iloc[0].fillna(0).to_dict()
             for k, v in new_weights.items():
+                
                 if v != 0:
                     weights[k] = v
 

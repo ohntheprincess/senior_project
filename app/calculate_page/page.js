@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import NavBar from "../nav/page";
 
@@ -12,6 +12,8 @@ export default function CalculatePage() {
 
   const [carData, setCarData] = useState([]);
   const [fuelTypeData, setFuelTypeData] = useState([]);
+  const [electricTypeData, setElectricTypeData] = useState([]);
+  const [chargingStation, setChargingStation] = useState(0);
 
   const [brands1, setBrands1] = useState([]);
   const [models1, setModels1] = useState([]);
@@ -48,6 +50,7 @@ export default function CalculatePage() {
   const [totalCost, setTotalCost] = useState(0);
   const [totalEVCost, setTotalEVCost] = useState(0);
 
+  const [isInfoMaintainance, setIsInfoMaintainance] = useState(false);
   useEffect(() => {
     fetch("/api/allCar")
       .then((res) => res.json())
@@ -70,6 +73,17 @@ export default function CalculatePage() {
         console.log("Fetched fuelTypeData:", data);
         if (Array.isArray(data)) {
           setFuelTypeData(data);
+        }
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+  useEffect(() => {
+    fetch("/api/getPowerRate")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Fetched fuelTypeData:", data);
+        if (Array.isArray(data)) {
+          setElectricTypeData(data);
         }
       })
       .catch((error) => console.error("Error fetching data:", error));
@@ -207,19 +221,25 @@ export default function CalculatePage() {
         fuelConsumption !== 0 ? distanceCompare / fuelConsumption : 0;
       const fuelCost = calculatedFuelLiter * fuelPrice;
       const totalFuelCost = fuelCost * 365 * selectedYear;
-      
+
       const carTaxPerYear = calculateCarTax(carTax);
-      const totalCarTax = carTaxPerYear * selectedYear; 
-      const totalInsurance = carInsurance * selectedYear; 
-  
+      const totalCarTax = carTaxPerYear * selectedYear;
+      const totalInsurance = carInsurance * selectedYear;
+
       const totalCost = totalFuelCost + totalCarTax + totalInsurance;
-  
+
       return totalCost;
     };
-  
+
     setTotalCost(calculateFuelCarLongTermCost());
-  }, [fuelConsumption, distanceCompare, fuelPrice, selectedYear, carInsurance, carTax]);
-  
+  }, [
+    fuelConsumption,
+    distanceCompare,
+    fuelPrice,
+    selectedYear,
+    carInsurance,
+    carTax,
+  ]);
 
   useEffect(() => {
     const calculateEVCarLongTermCost = () => {
@@ -353,8 +373,12 @@ export default function CalculatePage() {
     setFuelConsumption(0);
   };
   const closeModal = () => {
+    setIsInfoMaintainance(false);
     setSelectedFormula(null);
     resetManualInputs();
+  };
+  const closeInfoMaintain = () => {
+    setIsInfoMaintainance(false);
   };
   const handleInputModeChange = (mode) => {
     setInputMode(mode);
@@ -447,9 +471,31 @@ export default function CalculatePage() {
             style={{ maxHeight: "90vh" }}
           >
             {" "}
-            <h6 className="text-xl font-semibold text-mainblue mb-4  text-center">
-              สูตรเปรียบเทียบค่าใช้จ่ายระยะยาว
-            </h6>
+            <div className="flex flex-row justify-center items-center mb-4">
+              <h6 className=" text-xl font-semibold text-mainblue mx-6  text-center">
+                สูตรคำนวณค่าใช้จ่ายระยะยาว{" "}
+              </h6>
+              <button
+                className="text-mainblue"
+                onClick={() => setIsInfoMaintainance(true)}
+              >
+                {" "}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1"
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
+                  />
+                </svg>
+              </button>
+            </div>
             <div className="grid grid-cols-2 gap-4 border rounded p-3 mb-4">
               <div>
                 <p className="text-gray-600 font-bold">ระยะเวลาในการใช้รถ</p>
@@ -595,16 +641,67 @@ export default function CalculatePage() {
                     </select>
                   </div>
                 </div>
-                <div className="mt-2 mx-2">
-                  <label className="block text-gray-600 my-2">
-                    ค่าไฟต่อหน่วย (บาท/kWh)
-                  </label>
-                  <input
-                    type="number"
-                    value={electricityCost}
-                    onChange={(e) => setElectricityCost(Number(e.target.value))}
-                    className="p-2 w-full border border-gray-300 rounded text-black"
-                  />
+                <div className="mt-2 text-gray-600">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="mx-2">
+                      <label className="block text-gray-600">
+                        เลือกผู้ให้บริการชาร์จ
+                      </label>
+                      <select
+                        value={chargingStation}
+                        onChange={(e) => {
+                          console.log("Selected fuel price:", e.target.value);
+                          setChargingStation(e.target.value);
+                        }}
+                        className="mt-1 border p-2 rounded-md w-full"
+                      >
+                        <option value="">เลือกผู้ให้บริการชาร์จ</option>
+                        {electricTypeData
+                          .map((electric) => electric.Distributor)
+                          .filter(
+                            (value, index, self) =>
+                              self.indexOf(value) === index
+                          )
+                          .map((distributor, index) => (
+                            <option key={index} value={distributor}>
+                              {distributor}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                    <div className="">
+                      <label className="block text-gray-600">
+                        เลือกอัตรากำลังไฟฟ้า
+                      </label>
+                      <select
+                        value={electricityCost}
+                        onChange={(e) => {
+                          console.log("Selected fuel price:", e.target.value);
+                          setElectricityCost(Number(e.target.value));
+                        }}
+                        className="mt-1 border p-2 rounded-md w-full"
+                      >
+                        <option value="">เลือกอัตรากำลังไฟฟ้า</option>
+                        {electricTypeData
+                          .filter(
+                            (electric) =>
+                              electric.Distributor === chargingStation
+                          )
+                          .map((electric) => (
+                            <option
+                              key={electric.Power_ID}
+                              value={
+                                electric.Peak_Rates__including_VAT___baht_unit_
+                              }
+                            >
+                              {electric.Type_Power} |{" "}
+                              {electric.Peak_Rates__including_VAT___baht_unit_}{" "}
+                              บาท
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -650,7 +747,7 @@ export default function CalculatePage() {
               style={{ maxHeight: "90vh", overflowY: "auto" }}
             >
               <h6 className="text-xl font-semibold text-mainblue my-4 text-center">
-                สูตรการคำนวณค่าไฟฟ้าสำหรับการเดินทาง
+                การคำนวณค่าชาร์จไฟฟ้าตามเปอร์เซ็นต์ (%) ที่ชาร์จไป
               </h6>
               <div className="flex items-center justify-center mb-6">
                 <button
@@ -694,7 +791,7 @@ export default function CalculatePage() {
                         id="brand-select"
                         value={selectedBrand1}
                         onChange={handleBrandChange1}
-                        className="border rounded-md p-2 w-full h-10 my-4 text-black"
+                        className="border rounded-md p-2 w-full h-10 my-2 text-black"
                       >
                         <option value="">เลือกยี่ห้อรถ</option>
                         {brands1.length > 0 ? (
@@ -708,7 +805,9 @@ export default function CalculatePage() {
                         )}
                       </select>
 
-                      <label className="block text-gray-600">เลือกรุ่นรถ</label>
+                      <label className="block text-gray-600 my-2">
+                        เลือกรุ่นรถ
+                      </label>
                       <select
                         id="model-select"
                         value={selectedModel1}
@@ -770,18 +869,69 @@ export default function CalculatePage() {
                       className="mt-2 p-2 w-full border border-gray-300 rounded text-black"
                     />
                   </div>
-                  <div className="my-4">
-                    <label className="block text-gray-600">
-                      ค่าไฟต่อหน่วย (บาท/kWh)
-                    </label>
-                    <input
-                      type="number"
-                      value={electricityCost}
-                      onChange={(e) =>
-                        setElectricityCost(Number(e.target.value))
-                      }
-                      className="mt-2 p-2 w-full border border-gray-300 rounded text-black"
-                    />
+                  <div className="my-4 text-gray-600">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="mr-1">
+                        <label className="block text-gray-600">
+                          เลือกผู้ให้บริการชาร์จ
+                        </label>
+                        <select
+                          value={chargingStation}
+                          onChange={(e) => {
+                            console.log("Selected fuel price:", e.target.value);
+                            setChargingStation(e.target.value);
+                          }}
+                          className="mt-1 border p-2 rounded-md w-full"
+                        >
+                          <option value="">เลือกผู้ให้บริการชาร์จ</option>
+                          {electricTypeData
+                            .map((electric) => electric.Distributor)
+                            .filter(
+                              (value, index, self) =>
+                                self.indexOf(value) === index
+                            )
+                            .map((distributor, index) => (
+                              <option key={index} value={distributor}>
+                                {distributor}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                      <div className="mxl-1">
+                        <label className="block text-gray-600">
+                          เลือกอัตรากำลังไฟฟ้า
+                        </label>
+                        <select
+                          value={electricityCost}
+                          onChange={(e) => {
+                            console.log("Selected fuel price:", e.target.value);
+                            setElectricityCost(Number(e.target.value));
+                          }}
+                          className="mt-1 border p-2 rounded-md w-full"
+                        >
+                          <option value="">เลือกอัตรากำลังไฟฟ้า</option>
+                          {electricTypeData
+                            .filter(
+                              (electric) =>
+                                electric.Distributor === chargingStation
+                            )
+                            .map((electric) => (
+                              <option
+                                key={electric.Power_ID}
+                                value={
+                                  electric.Peak_Rates__including_VAT___baht_unit_
+                                }
+                              >
+                                {electric.Type_Power} |{" "}
+                                {
+                                  electric.Peak_Rates__including_VAT___baht_unit_
+                                }{" "}
+                                บาท
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -926,18 +1076,75 @@ export default function CalculatePage() {
                         ))}
                       </select>
                     </div>
-                    <div>
-                      <label className="block text-gray-600">
-                        ค่าไฟฟ้าต่อหน่วย (บาท/kWh)
-                      </label>
-                      <input
-                        type="number"
-                        value={electricityCost}
-                        onChange={(e) =>
-                          setElectricityCost(Number(e.target.value))
-                        }
-                        className="mt-1 p-2 w-full border border-gray-300 rounded text-black"
-                      />
+                    <div className="text-gray-600">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="mr-1">
+                          <label className="block text-gray-600">
+                            เลือกผู้ให้บริการชาร์จ
+                          </label>
+                          <select
+                            value={chargingStation}
+                            onChange={(e) => {
+                              console.log(
+                                "Selected fuel price:",
+                                e.target.value
+                              );
+                              setChargingStation(e.target.value);
+                            }}
+                            className="mt-1 border p-2 rounded-md w-full"
+                          >
+                            <option value="">เลือกผู้ให้บริการชาร์จ</option>
+                            {electricTypeData
+                              .map((electric) => electric.Distributor)
+                              .filter(
+                                (value, index, self) =>
+                                  self.indexOf(value) === index
+                              )
+                              .map((distributor, index) => (
+                                <option key={index} value={distributor}>
+                                  {distributor}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                        <div className="mxl-1">
+                          <label className="block text-gray-600">
+                            เลือกอัตรากำลังไฟฟ้า
+                          </label>
+                          <select
+                            value={electricityCost}
+                            onChange={(e) => {
+                              console.log(
+                                "Selected fuel price:",
+                                e.target.value
+                              );
+                              setElectricityCost(Number(e.target.value));
+                            }}
+                            className="mt-1 border p-2 rounded-md w-full"
+                          >
+                            <option value="">เลือกอัตรากำลังไฟฟ้า</option>
+                            {electricTypeData
+                              .filter(
+                                (electric) =>
+                                  electric.Distributor === chargingStation
+                              )
+                              .map((electric) => (
+                                <option
+                                  key={electric.Power_ID}
+                                  value={
+                                    electric.Peak_Rates__including_VAT___baht_unit_
+                                  }
+                                >
+                                  {electric.Type_Power} |{" "}
+                                  {
+                                    electric.Peak_Rates__including_VAT___baht_unit_
+                                  }{" "}
+                                  บาท
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -968,18 +1175,32 @@ export default function CalculatePage() {
                         className="mt-1 p-2 w-full border border-gray-300 rounded text-black"
                       />
                     </div>
-                    <div>
+                    <div className="text-gray-600">
                       <label className="block text-gray-600">
-                        ค่าไฟฟ้าต่อหน่วย (บาท/kWh)
+                        เลือกประเภทเชื้อเพลิง
                       </label>
-                      <input
-                        type="number"
+                      <select
                         value={electricityCost}
-                        onChange={(e) =>
-                          setElectricityCost(Number(e.target.value))
-                        }
-                        className="mt-1 p-2 w-full border border-gray-300 rounded text-black"
-                      />
+                        onChange={(e) => {
+                          console.log("Selected fuel price:", e.target.value);
+                          setElectricityCost(Number(e.target.value));
+                        }}
+                        className="border p-2 rounded-md w-full"
+                      >
+                        <option value="">เลือกประเภทเชื้อเพลิง</option>
+                        {electricTypeData.map((electric) => (
+                          <option
+                            key={electric.Power_ID}
+                            value={
+                              electric.Peak_Rates__including_VAT___baht_unit_
+                            }
+                          >
+                            {electric.Type_Power} -{" "}
+                            {electric.Peak_Rates__including_VAT___baht_unit_}{" "}
+                            บาท
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 )}
@@ -1017,7 +1238,7 @@ export default function CalculatePage() {
               className="bg-white px-6 py-4 rounded-lg shadow-lg w-4/5 overflow-y-auto"
               style={{ maxHeight: "90vh" }}
             >
-              <h6 className="text-xl font-semibold text-mainblue my-4 text-center">
+              <h6 className="text-xl font-semibold text-mainblue mt-6 mb-3 text-center">
                 สูตรเปรียบเทียบค่าใช้จ่ายในการเดินทางด้วยรถยนต์ไฟฟ้าและรถยนต์น้ำมัน
               </h6>
               <div className="flex flex-col justify-center items-center mb-4">
@@ -1034,81 +1255,6 @@ export default function CalculatePage() {
               </div>
 
               <div className="grid grid-cols-2 gap-6">
-                <div className="border-r pr-4">
-                  <p className="text-lg font-bold text-gray-600">
-                    การเดินทางด้วยรถยนต์ไฟฟ้า
-                  </p>
-                  {inputMode === "carModel" ? (
-                    <div>
-                      <label className="block text-gray-600">
-                        เลือกยี่ห้อรถ
-                      </label>
-                      <select
-                        id="brand-select"
-                        value={selectedBrand1}
-                        onChange={handleBrandChange1}
-                        className="border rounded-md p-2 w-full h-10 my-2 text-black"
-                      >
-                        <option value="">เลือกยี่ห้อรถ</option>
-                        {brands1.length > 0 ? (
-                          brands1.map((brand, index) => (
-                            <option key={`brand-${index}`} value={brand}>
-                              {brand}
-                            </option>
-                          ))
-                        ) : (
-                          <option value="">ไม่มีข้อมูล</option>
-                        )}
-                      </select>
-
-                      <label className="block text-gray-600">เลือกรุ่นรถ</label>
-                      <select
-                        id="model-select"
-                        value={selectedModel1}
-                        onChange={handleModelChange1}
-                        disabled={!selectedBrand1}
-                        className="border rounded-md p-2 w-full h-10 text-black"
-                      >
-                        <option value="">เลือกรุ่นรถ</option>
-                        {models1.map((model, index) => (
-                          <option key={`model-${index}`} value={model}>
-                            {model}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  ) : null}
-                  <div className="grid grid-cols-2">
-                    <div className="mt-2 mx-2">
-                      <label className="block text-gray-600 my-2">
-                        อัตราสิ้นเปลืองไฟฟ้า (kWh/100 km)
-                      </label>
-                      <input
-                        type="number"
-                        value={powerConsumption}
-                        onChange={(e) =>
-                          setPowerConsumption(Number(e.target.value))
-                        }
-                        className="p-2 w-full border border-gray-300 rounded text-black"
-                        disabled
-                      />
-                    </div>{" "}
-                    <div className="mt-2 mx-2">
-                      <label className="block text-gray-600 my-2">
-                        ค่าไฟต่อหน่วย (บาท/kWh)
-                      </label>
-                      <input
-                        type="number"
-                        value={electricityCost}
-                        onChange={(e) =>
-                          setElectricityCost(Number(e.target.value))
-                        }
-                        className="p-2 w-full border border-gray-300 rounded text-black"
-                      />
-                    </div>
-                  </div>
-                </div>
-
                 <div className="pr-4">
                   <p className="text-lg font-bold text-gray-600">
                     การเดินทางด้วยรถยนต์น้ำมัน
@@ -1186,6 +1332,125 @@ export default function CalculatePage() {
                     </div>
                   </div>
                 </div>
+                <div className="border-r pr-4">
+                  <p className="text-lg font-bold text-gray-600">
+                    การเดินทางด้วยรถยนต์ไฟฟ้า
+                  </p>
+                  {inputMode === "carModel" ? (
+                    <div>
+                      <label className="block text-gray-600">
+                        เลือกยี่ห้อรถ
+                      </label>
+                      <select
+                        id="brand-select"
+                        value={selectedBrand1}
+                        onChange={handleBrandChange1}
+                        className="border rounded-md p-2 w-full h-10 my-2 text-black"
+                      >
+                        <option value="">เลือกยี่ห้อรถ</option>
+                        {brands1.length > 0 ? (
+                          brands1.map((brand, index) => (
+                            <option key={`brand-${index}`} value={brand}>
+                              {brand}
+                            </option>
+                          ))
+                        ) : (
+                          <option value="">ไม่มีข้อมูล</option>
+                        )}
+                      </select>
+
+                      <label className="block text-gray-600">เลือกรุ่นรถ</label>
+                      <select
+                        id="model-select"
+                        value={selectedModel1}
+                        onChange={handleModelChange1}
+                        disabled={!selectedBrand1}
+                        className="border rounded-md p-2 w-full h-10 text-black"
+                      >
+                        <option value="">เลือกรุ่นรถ</option>
+                        {models1.map((model, index) => (
+                          <option key={`model-${index}`} value={model}>
+                            {model}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : null}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="mt-2 text-gray-600">
+                      <label className="block text-gray-600">
+                        เลือกผู้ให้บริการชาร์จ
+                      </label>
+                      <select
+                        value={chargingStation}
+                        onChange={(e) => {
+                          console.log("Selected fuel price:", e.target.value);
+                          setChargingStation(e.target.value);
+                        }}
+                        className="mt-1 border p-2 rounded-md w-full"
+                      >
+                        <option value="">เลือกผู้ให้บริการชาร์จ</option>
+                        {electricTypeData
+                          .map((electric) => electric.Distributor)
+                          .filter(
+                            (value, index, self) =>
+                              self.indexOf(value) === index
+                          )
+                          .map((distributor, index) => (
+                            <option key={index} value={distributor}>
+                              {distributor}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                    <div className="mt-2 text-gray-600">
+                      <label className="block text-gray-600">
+                        เลือกอัตรากำลังไฟฟ้า
+                      </label>
+                      <select
+                        value={electricityCost}
+                        onChange={(e) => {
+                          console.log("Selected fuel price:", e.target.value);
+                          setElectricityCost(Number(e.target.value));
+                        }}
+                        className="mt-1 border p-2 rounded-md w-full"
+                      >
+                        <option value="">เลือกอัตรากำลังไฟฟ้า</option>
+                        {electricTypeData
+                          .filter(
+                            (electric) =>
+                              electric.Distributor === chargingStation
+                          )
+                          .map((electric) => (
+                            <option
+                              key={electric.Power_ID}
+                              value={
+                                electric.Peak_Rates__including_VAT___baht_unit_
+                              }
+                            >
+                              {electric.Type_Power} |{" "}
+                              {electric.Peak_Rates__including_VAT___baht_unit_}{" "}
+                              บาท
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="mt-2 mx-2">
+                    <label className="block text-gray-600 my-2">
+                      อัตราสิ้นเปลืองไฟฟ้า (kWh/100 km)
+                    </label>
+                    <input
+                      type="number"
+                      value={powerConsumption}
+                      onChange={(e) =>
+                        setPowerConsumption(Number(e.target.value))
+                      }
+                      className="p-2 w-full border border-gray-300 rounded text-black"
+                      disabled
+                    />
+                  </div>{" "}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-6 mt-3">
@@ -1211,7 +1476,7 @@ export default function CalculatePage() {
                 </div>
               </div>
 
-              <div className="flex justify-center mt-6">
+              <div className="flex justify-center mt-3">
                 <button
                   className="text-white bg-mainred hover:bg-red-600 px-4 py-2 rounded"
                   onClick={() => {
@@ -1227,6 +1492,41 @@ export default function CalculatePage() {
         </div>
       ) : (
         <div></div>
+      )}
+      {isInfoMaintainance && (
+        <div className="font-prompt text-gray-600 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border p-6 w-1/4 rounded-lg shadow-lg">
+          <p className="text-center text-2xl">การคำนวณนี้คำนวณจาก</p>
+          <div className="border-2 rounded-xl p-3 m-3">
+            <ol className="list-decimal pl-6">
+              <li> รายการภาษีที่ต้องจ่าย</li>
+              <li> พรบ.</li>
+              <li> ประกัน</li>
+              <li> ค่าใช้จ่ายเกี่ยวกับเชื้อเพลิง</li>
+            </ol>
+          </div>
+          <div className="m-3 text-gray-500">
+            <p className="mt-4">หมายเหตุ :</p>
+            <ul className="list-disc pl-6">
+              <li>
+                การคำนวณประกันรถยนต์น้ำมัน คำนวณจากประกันชั้น 1 ซ่อมห้างเท่านั้น
+              </li>
+              <li>
+                รายการทุกอย่างเป็นค่าเฉลี่ย โปรดหาข้อมูลที่สนใจเพิ่มเติมอีกครั้ง
+              </li>
+            </ul>
+          </div>
+
+          <div className="flex justify-center mt-8">
+            <button
+              className="text-white bg-mainred hover:bg-red-600 px-4 py-2 rounded"
+              onClick={() => {
+                closeInfoMaintain();
+              }}
+            >
+              ปิด
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

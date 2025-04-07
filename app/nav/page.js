@@ -12,11 +12,32 @@ export default function NavBar() {
         .scrollIntoView({ behavior: "smooth" });
     }, 500);
   };
+  const clickCompare = () => {
+    router.push("/");
+    setTimeout(() => {
+      document
+        .getElementById("section-compare")
+        .scrollIntoView({ behavior: "smooth" });
+    }, 500);
+  };
+
   const clickCalculate = () => {
     router.push("/calculate_page");
   };
   const clickForm = () => {
     router.push("/formPage");
+  };
+
+  const clickMapPage = () => {
+    router.push("/MapPage");
+  };
+  const clickDashboard = () => {
+    router.push("/");
+    setTimeout(() => {
+      document
+        .getElementById("section-dashboard")
+        .scrollIntoView({ behavior: "smooth" });
+    }, 100);
   };
   const backToHome = () => {
     router.push("/");
@@ -34,18 +55,18 @@ export default function NavBar() {
             <button onClick={() => backToHome()}>หน้าแรก</button>
           </li>
           <li className="mx-4">
-            <button>แดชบอร์ด</button>
+            <button onClick={()=>clickDashboard()}>แดชบอร์ด</button>
           </li>
           <li className="mx-4">
             <button onClick={clickCarData}>ข้อมูลรถยนต์ไฟฟ้า</button>
           </li>
           <li className="mx-4">
-            <button onClick={clickCarCompare}>
+            <button onClick={()=>clickCompare()}>
               เปรียบเทียบข้อมูลรถยนต์ไฟฟ้า
             </button>
           </li>
           <li className="mx-4">
-            <button>แผนที่แสดงจุดชาร์จ</button>
+            <button onClick={()=>clickMapPage()}>แผนที่แสดงจุดชาร์จ</button>
           </li>
           <li className="mx-4">
             <button onClick={() => clickCalculate()}>สูตรคำนวณ</button>

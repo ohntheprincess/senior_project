@@ -13,7 +13,7 @@ export default function Evcardata() {
   const [selectedCar, setSelectedCar] = useState(null);
   const [selectedCarID, setSelectedCarID] = useState([]);
 
-  const [isCompared, setIsCompared] = useState(false);
+  const [isCompared, setIsCompared] = useState(1);
 
   const carsPerPage = 4;
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,7 +35,19 @@ export default function Evcardata() {
   }, []);
 
   useEffect(() => {
-    if (isCompared) {
+    if (isCompared == 2) {
+      clickCarData();
+    }
+  }, [isCompared]);
+  const clickCarData = () => {
+    setTimeout(() => {
+      document
+        .getElementById("section-cardata")
+        .scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+  useEffect(() => {
+    if (isCompared == 3) {
       setTimeout(() => {
         const section = document.getElementById("section-comparefromdata");
         if (section) {
@@ -103,8 +115,7 @@ export default function Evcardata() {
       const updatedList = prev.filter((c) => c.Model_ID !== car.Model_ID);
 
       if (updatedList.length === 1 || updatedList.length === 0) {
-        setIsCompared(false);
-        clickCarData();
+        setIsCompared(2);
       }
 
       return updatedList;
@@ -115,7 +126,7 @@ export default function Evcardata() {
 
   const handleDeSelected = () => {
     setSelectedCarID([]);
-    setIsCompared(false);
+    setIsCompared(1);
   };
 
   const brandOptions =
@@ -411,7 +422,7 @@ export default function Evcardata() {
           <div className="flex flex-row justify-between items-center">
             <h3>
               รถยนต์ไฟฟ้าที่เลือก
-              <span className="text-gray-500">(เลือกได้แค่ 4 คันเท่านั้น)</span>
+              <span className="text-gray-500">(เลือกได้แค่ 3 คันเท่านั้น)</span>
             </h3>
             <button
               className="bg-white text-gray-700 rounded-lg"
@@ -433,7 +444,7 @@ export default function Evcardata() {
             <button
               className="p-2 bg-mainblue text-white rounded-lg"
               onClick={() => {
-                setIsCompared(true);
+                setIsCompared(3);
               }}
             >
               เปรียบเทียบ
@@ -441,7 +452,7 @@ export default function Evcardata() {
           </div>
         </div>
       )}
-      {isCompared && (
+      {isCompared == 3 && (
         <div
           className="bg-white w-5/6 h-full pt-20 mx-auto"
           id="section-comparefromdata"

@@ -198,7 +198,7 @@ export default function Dashboard() {
   }
 
   return (
-    <section className="container mx-auto py-12 px-4">
+    <section className="container mx-auto py-12 px-4 mt-28" id="section-dashboard">
       <div className="max-w-5xl mx-auto">
         {/* Dashboard Header - Minimal */}
         <div className="mb-8 text-center">

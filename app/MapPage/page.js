@@ -1,110 +1,151 @@
-"use client"
+"use client";
+import NavBar from "../nav/page";
 
-import { useEffect, useState, useMemo, useCallback } from "react"
-import { GoogleMap, Marker, InfoWindow, useLoadScript, MarkerClusterer } from "@react-google-maps/api"
-import { Filter, MapPin, Battery, Zap, ChevronDown, X, Clock, DollarSign, Info } from "lucide-react"
+import { useEffect, useState, useMemo, useCallback } from "react";
+import {
+  GoogleMap,
+  Marker,
+  InfoWindow,
+  useLoadScript,
+  MarkerClusterer,
+} from "@react-google-maps/api";
+import {
+  Filter,
+  MapPin,
+  Battery,
+  Zap,
+  ChevronDown,
+  X,
+  Clock,
+  DollarSign,
+  Info,
+} from "lucide-react";
 
 const mapContainerStyle = {
   width: "100%",
   height: "100%",
-}
+};
 
 const center = {
   lat: 13.7367,
   lng: 100.5231,
-}
+};
 
 const customIcon = {
   url: "/charging-station_green.png",
   scaledSize: { width: 32, height: 32 },
-}
+};
 
 const clusterOptions = {
-  imagePath: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m",
+  imagePath:
+    "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m",
   gridSize: 50,
   minimumClusterSize: 3,
   maxZoom: 15,
-}
+};
 
 export default function MapPage() {
-  const [stations, setStations] = useState([])
-  const [filteredStations, setFilteredStations] = useState([])
-  const [selectedStation, setSelectedStation] = useState(null)
-  const [connectionType, setConnectionType] = useState("")
-  const [selectedProvince, setSelectedProvince] = useState("")
-  const [selectedDistrict, setSelectedDistrict] = useState("")
-  const [selectedSubdistrict, setSelectedSubdistrict] = useState("")
-  const [selectedPowers, setSelectedPowers] = useState([])
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [mapRef, setMapRef] = useState(null)
-  const [powerCosts, setPowerCosts] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [selectedDistributor, setSelectedDistributor] = useState("")
+  const [stations, setStations] = useState([]);
+  const [filteredStations, setFilteredStations] = useState([]);
+  const [selectedStation, setSelectedStation] = useState(null);
+  const [connectionType, setConnectionType] = useState("");
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedSubdistrict, setSelectedSubdistrict] = useState("");
+  const [selectedPowers, setSelectedPowers] = useState([]);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [mapRef, setMapRef] = useState(null);
+  const [powerCosts, setPowerCosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedDistributor, setSelectedDistributor] = useState("");
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-  })
+  });
 
   // ดึงข้อมูลสถานีชาร์จ
   const fetchStations = useCallback(async () => {
     try {
-      setIsLoading(true)
-      const response = await fetch("/api/charging-stations")
-      if (!response.ok) throw new Error("ไม่สามารถดึงข้อมูลสถานีชาร์จได้")
-      const data = await response.json()
+      setIsLoading(true);
+      const response = await fetch("/api/charging-stations");
+      if (!response.ok) throw new Error("ไม่สามารถดึงข้อมูลสถานีชาร์จได้");
+      const data = await response.json();
 
       const formattedData = data.map((station) => ({
         ...station,
         displayName: station.Name,
         location: { lat: station.Latitude, lng: station.Longitude },
         connectionTypes: [
-          ...(station.acType2 > 0 ? [{ type: "AC Type 2", count: station.acType2 }] : []),
+          ...(station.acType2 > 0
+            ? [{ type: "AC Type 2", count: station.acType2 }]
+            : []),
           ...(station.CCS2 > 0 ? [{ type: "CCS2", count: station.CCS2 }] : []),
-          ...(station.CHAdeMO > 0 ? [{ type: "CHAdeMO", count: station.CHAdeMO }] : []),
+          ...(station.CHAdeMO > 0
+            ? [{ type: "CHAdeMO", count: station.CHAdeMO }]
+            : []),
         ],
         powers: [
-          ...(station.power25 > 0 ? [{ power: 25, count: station.power25 }] : []),
-          ...(station.power50 > 0 ? [{ power: 50, count: station.power50 }] : []),
-          ...(station.power120 > 0 ? [{ power: 120, count: station.power120 }] : []),
-          ...(station.power300 > 0 ? [{ power: 300, count: station.power300 }] : []),
-          ...(station.power360 > 0 ? [{ power: 360, count: station.power360 }] : []),
+          ...(station.power25 > 0
+            ? [{ power: 25, count: station.power25 }]
+            : []),
+          ...(station.power50 > 0
+            ? [{ power: 50, count: station.power50 }]
+            : []),
+          ...(station.power120 > 0
+            ? [{ power: 120, count: station.power120 }]
+            : []),
+          ...(station.power300 > 0
+            ? [{ power: 300, count: station.power300 }]
+            : []),
+          ...(station.power360 > 0
+            ? [{ power: 360, count: station.power360 }]
+            : []),
         ],
-      }))
+      }));
 
-      setStations(formattedData)
-      setFilteredStations(formattedData)
-      setIsLoading(false)
+      setStations(formattedData);
+      setFilteredStations(formattedData);
+      setIsLoading(false);
     } catch (error) {
-      console.error("Error fetching stations data:", error)
-      setError("ไม่สามารถดึงข้อมูลสถานีชาร์จได้")
-      setIsLoading(false)
+      console.error("Error fetching stations data:", error);
+      setError("ไม่สามารถดึงข้อมูลสถานีชาร์จได้");
+      setIsLoading(false);
     }
-  }, [])
+  }, []);
 
   // ดึงข้อมูลค่าไฟฟ้า
   const fetchPowerCosts = useCallback(async () => {
     try {
-      const response = await fetch("/api/powerCost")
-      if (!response.ok) throw new Error("ไม่สามารถดึงข้อมูลค่าไฟฟ้าได้")
-      const data = await response.json()
-      setPowerCosts(data)
+      const response = await fetch("/api/powerCost");
+      if (!response.ok) throw new Error("ไม่สามารถดึงข้อมูลค่าไฟฟ้าได้");
+      const data = await response.json();
+      setPowerCosts(data);
     } catch (error) {
-      console.error("Error fetching power cost data:", error)
-      setError("ไม่สามารถดึงข้อมูลค่าไฟฟ้าได้")
+      console.error("Error fetching power cost data:", error);
+      setError("ไม่สามารถดึงข้อมูลค่าไฟฟ้าได้");
     }
-  }, [])
+  }, []);
 
   // คำนวณตัวเลือกสำหรับ dropdown
-  const provinces = useMemo(() => [...new Set(stations.map((s) => s.Province))].sort(), [stations])
+  const provinces = useMemo(
+    () => [...new Set(stations.map((s) => s.Province))].sort(),
+    [stations]
+  );
 
   const districts = useMemo(
     () =>
       selectedProvince
-        ? [...new Set(stations.filter((s) => s.Province === selectedProvince).map((s) => s.District))].sort()
+        ? [
+            ...new Set(
+              stations
+                .filter((s) => s.Province === selectedProvince)
+                .map((s) => s.District)
+            ),
+          ].sort()
         : [],
-    [selectedProvince, stations],
-  )
+    [selectedProvince, stations]
+  );
 
   const subdistricts = useMemo(
     () =>
@@ -112,66 +153,77 @@ export default function MapPage() {
         ? [
             ...new Set(
               stations
-                .filter((s) => s.Province === selectedProvince && s.District === selectedDistrict)
-                .map((s) => s.Subdistrict),
+                .filter(
+                  (s) =>
+                    s.Province === selectedProvince &&
+                    s.District === selectedDistrict
+                )
+                .map((s) => s.Subdistrict)
             ),
           ].sort()
         : [],
-    [selectedProvince, selectedDistrict, stations],
-  )
+    [selectedProvince, selectedDistrict, stations]
+  );
 
   const allConnectionTypes = useMemo(
-    () => [...new Set(stations.flatMap((s) => s.connectionTypes.map((ct) => ct.type)))],
-    [stations],
-  )
+    () => [
+      ...new Set(
+        stations.flatMap((s) => s.connectionTypes.map((ct) => ct.type))
+      ),
+    ],
+    [stations]
+  );
 
   const distributors = useMemo(
-    () => [...new Set(stations.map((s) => s.Distributor))].filter(Boolean).sort(),
-    [stations],
-  )
+    () =>
+      [...new Set(stations.map((s) => s.Distributor))].filter(Boolean).sort(),
+    [stations]
+  );
 
   // ระบบกรองข้อมูล
   useEffect(() => {
-    let filtered = stations
+    let filtered = stations;
 
     if (connectionType) {
-      filtered = filtered.filter((s) => s.connectionTypes.some((ct) => ct.type === connectionType))
+      filtered = filtered.filter((s) =>
+        s.connectionTypes.some((ct) => ct.type === connectionType)
+      );
     }
 
     if (selectedProvince) {
-      filtered = filtered.filter((s) => s.Province === selectedProvince)
+      filtered = filtered.filter((s) => s.Province === selectedProvince);
     }
 
     if (selectedDistrict) {
-      filtered = filtered.filter((s) => s.District === selectedDistrict)
+      filtered = filtered.filter((s) => s.District === selectedDistrict);
     }
 
     if (selectedSubdistrict) {
-      filtered = filtered.filter((s) => s.Subdistrict === selectedSubdistrict)
+      filtered = filtered.filter((s) => s.Subdistrict === selectedSubdistrict);
     }
 
     if (selectedPowers.length > 0) {
       filtered = filtered.filter((s) =>
         selectedPowers.some((power) => {
-          const powerValue = Number.parseInt(power.replace("kW", ""))
-          return s[`power${powerValue}`] > 0
-        }),
-      )
+          const powerValue = Number.parseInt(power.replace("kW", ""));
+          return s[`power${powerValue}`] > 0;
+        })
+      );
     }
 
     if (selectedDistributor) {
-      filtered = filtered.filter((s) => s.Distributor === selectedDistributor)
+      filtered = filtered.filter((s) => s.Distributor === selectedDistributor);
     }
 
-    setFilteredStations(filtered)
+    setFilteredStations(filtered);
 
     // If we have filtered results and a map reference, fit bounds to show all markers
     if (filtered.length > 0 && filtered.length < stations.length && mapRef) {
-      const bounds = new window.google.maps.LatLngBounds()
+      const bounds = new window.google.maps.LatLngBounds();
       filtered.forEach((station) => {
-        bounds.extend(station.location)
-      })
-      mapRef.fitBounds(bounds)
+        bounds.extend(station.location);
+      });
+      mapRef.fitBounds(bounds);
     }
   }, [
     connectionType,
@@ -182,45 +234,53 @@ export default function MapPage() {
     selectedDistributor,
     stations,
     mapRef,
-  ])
+  ]);
 
   useEffect(() => {
-    fetchStations()
-    fetchPowerCosts()
-  }, [fetchStations, fetchPowerCosts])
+    fetchStations();
+    fetchPowerCosts();
+  }, [fetchStations, fetchPowerCosts]);
 
   const onMapLoad = useCallback((map) => {
-    setMapRef(map)
-  }, [])
+    setMapRef(map);
+  }, []);
 
   const resetFilters = useCallback(() => {
-    setConnectionType("")
-    setSelectedProvince("")
-    setSelectedDistrict("")
-    setSelectedSubdistrict("")
-    setSelectedPowers([])
-    setSelectedDistributor("")
-  }, [])
+    setConnectionType("");
+    setSelectedProvince("");
+    setSelectedDistrict("");
+    setSelectedSubdistrict("");
+    setSelectedPowers([]);
+    setSelectedDistributor("");
+  }, []);
 
   const toggleFilter = () => {
-    setIsFilterOpen(!isFilterOpen)
-  }
+    setIsFilterOpen(!isFilterOpen);
+  };
 
   // ฟังก์ชันหาค่าไฟฟ้าตามกำลังไฟและผู้ให้บริการ
   const getPowerCostByPowerAndDistributor = (power, distributor) => {
-    if (!powerCosts || powerCosts.length === 0) return null
+    if (!powerCosts || powerCosts.length === 0) return null;
 
     // หาค่าไฟฟ้าที่ตรงกับกำลังไฟและผู้ให้บริการที่ระบุ
     return powerCosts.find((cost) => {
-      const powerValue = Number.parseInt(cost.Power)
-      return powerValue === power && cost.Distributor === distributor
-    })
-  }
+      const powerValue = Number.parseInt(cost.Power);
+      return powerValue === power && cost.Distributor === distributor;
+    });
+  };
 
   // ฟังก์ชันแสดงข้อมูลค่าไฟฟ้าของสถานี
   const renderPowerCostInfo = (station) => {
-    if (!station || !station.powers || station.powers.length === 0 || !powerCosts || powerCosts.length === 0) {
-      return <p className="text-gray-500 text-sm italic">ไม่มีข้อมูลค่าไฟฟ้า</p>
+    if (
+      !station ||
+      !station.powers ||
+      station.powers.length === 0 ||
+      !powerCosts ||
+      powerCosts.length === 0
+    ) {
+      return (
+        <p className="text-gray-500 text-sm italic">ไม่มีข้อมูลค่าไฟฟ้า</p>
+      );
     }
 
     return (
@@ -231,39 +291,51 @@ export default function MapPage() {
           <span>Off-Peak (บาท/หน่วย)</span>
         </div>
         {station.powers.map((powerInfo, index) => {
-          const powerCost = getPowerCostByPowerAndDistributor(powerInfo.power, station.Distributor)
-          if (!powerCost) return null
+          const powerCost = getPowerCostByPowerAndDistributor(
+            powerInfo.power,
+            station.Distributor
+          );
+          if (!powerCost) return null;
 
           return (
-            <div key={index} className="flex justify-between text-sm border-b border-gray-100 pb-1">
+            <div
+              key={index}
+              className="flex justify-between text-sm border-b border-gray-100 pb-1"
+            >
               <span className="font-medium">{powerInfo.power} kW</span>
-              <span className="text-red-600">{powerCost.Peak_Rates__including_VAT___baht_unit_}</span>
-              <span className="text-green-600">{powerCost.Off_Peak_Rates__including_VAT___baht_unit_}</span>
+              <span className="text-red-600">
+                {powerCost.Peak_Rates__including_VAT___baht_unit_}
+              </span>
+              <span className="text-green-600">
+                {powerCost.Off_Peak_Rates__including_VAT___baht_unit_}
+              </span>
             </div>
-          )
+          );
         })}
         <div className="text-xs text-gray-500 flex items-center mt-1">
           <Info size={12} className="mr-1" />
           <span>Peak: 09.00-22.00 น. | Off-Peak: 22.00-09.00 น.</span>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   if (!isLoaded) {
-    return <LoadingScreen message="กำลังโหลดแผนที่..." />
+    return <LoadingScreen message="กำลังโหลดแผนที่..." />;
   }
 
   if (isLoading) {
-    return <LoadingScreen message="กำลังโหลดข้อมูลสถานีชาร์จ..." />
+    return <LoadingScreen message="กำลังโหลดข้อมูลสถานีชาร์จ..." />;
   }
 
   if (error) {
-    return <ErrorScreen error={error} />
+    return <ErrorScreen error={error} />;
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen mt-20">
+      <NavBar />
+
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-0">
@@ -278,10 +350,18 @@ export default function MapPage() {
             >
               <Filter size={18} />
               <span>ตัวกรอง</span>
-              <ChevronDown size={16} className={`transition-transform ${isFilterOpen ? "rotate-180" : ""}`} />
+              <ChevronDown
+                size={16}
+                className={`transition-transform ${
+                  isFilterOpen ? "rotate-180" : ""
+                }`}
+              />
             </button>
 
-            {(connectionType || selectedProvince || selectedPowers.length > 0 || selectedDistributor) && (
+            {(connectionType ||
+              selectedProvince ||
+              selectedPowers.length > 0 ||
+              selectedDistributor) && (
               <button
                 onClick={resetFilters}
                 className="flex items-center gap-1 bg-red-50 text-red-600 px-3 py-2 rounded-lg hover:bg-red-100 transition-colors"
@@ -298,13 +378,15 @@ export default function MapPage() {
           <div className="bg-white rounded-xl shadow-md p-4 mb-6 transition-all">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">จังหวัด</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  จังหวัด
+                </label>
                 <select
                   value={selectedProvince}
                   onChange={(e) => {
-                    setSelectedProvince(e.target.value)
-                    setSelectedDistrict("")
-                    setSelectedSubdistrict("")
+                    setSelectedProvince(e.target.value);
+                    setSelectedDistrict("");
+                    setSelectedSubdistrict("");
                   }}
                   className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 >
@@ -318,12 +400,14 @@ export default function MapPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">อำเภอ</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  อำเภอ
+                </label>
                 <select
                   value={selectedDistrict}
                   onChange={(e) => {
-                    setSelectedDistrict(e.target.value)
-                    setSelectedSubdistrict("")
+                    setSelectedDistrict(e.target.value);
+                    setSelectedSubdistrict("");
                   }}
                   className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   disabled={!selectedProvince}
@@ -338,7 +422,9 @@ export default function MapPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">ตำบล</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ตำบล
+                </label>
                 <select
                   value={selectedSubdistrict}
                   onChange={(e) => setSelectedSubdistrict(e.target.value)}
@@ -355,7 +441,9 @@ export default function MapPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">ประเภทชาร์จ</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ประเภทชาร์จ
+                </label>
                 <select
                   value={connectionType}
                   onChange={(e) => setConnectionType(e.target.value)}
@@ -371,7 +459,9 @@ export default function MapPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">ผู้ให้บริการ</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  ผู้ให้บริการ
+                </label>
                 <select
                   value={selectedDistributor}
                   onChange={(e) => setSelectedDistributor(e.target.value)}
@@ -393,16 +483,21 @@ export default function MapPage() {
               </label>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                 {["25kW", "50kW", "120kW", "300kW", "360kW"].map((power) => (
-                  <label key={power} className="flex items-center space-x-2 cursor-pointer">
+                  <label
+                    key={power}
+                    className="flex items-center space-x-2 cursor-pointer"
+                  >
                     <input
                       type="checkbox"
                       value={power}
                       checked={selectedPowers.includes(power)}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedPowers([...selectedPowers, power])
+                          setSelectedPowers([...selectedPowers, power]);
                         } else {
-                          setSelectedPowers(selectedPowers.filter((p) => p !== power))
+                          setSelectedPowers(
+                            selectedPowers.filter((p) => p !== power)
+                          );
                         }
                       }}
                       className="form-checkbox h-4 w-4 text-green-600 rounded"
@@ -419,11 +514,21 @@ export default function MapPage() {
         <div className="bg-white rounded-lg shadow-sm p-3 mb-4 flex justify-between items-center">
           <div className="text-sm text-gray-600">
             <MapPin className="inline-block mr-1" size={16} />
-            พบ <span className="font-semibold text-green-600">{filteredStations.length}</span> จุดชาร์จ
-            {filteredStations.length !== stations.length && <span> จากทั้งหมด {stations.length} จุด</span>}
+            พบ{" "}
+            <span className="font-semibold text-green-600">
+              {filteredStations.length}
+            </span>{" "}
+            จุดชาร์จ
+            {filteredStations.length !== stations.length && (
+              <span> จากทั้งหมด {stations.length} จุด</span>
+            )}
           </div>
 
-          {filteredStations.length > 0 && <div className="text-xs text-gray-500">คลิกที่หมุดเพื่อดูรายละเอียด</div>}
+          {filteredStations.length > 0 && (
+            <div className="text-xs text-gray-500">
+              คลิกที่หมุดเพื่อดูรายละเอียด
+            </div>
+          )}
         </div>
 
         {/* Map Section */}
@@ -475,7 +580,10 @@ export default function MapPage() {
             </MarkerClusterer>
 
             {selectedStation && (
-              <InfoWindow position={selectedStation.location} onCloseClick={() => setSelectedStation(null)}>
+              <InfoWindow
+                position={selectedStation.location}
+                onCloseClick={() => setSelectedStation(null)}
+              >
                 <div className="p-2 min-w-[320px] max-w-[400px]">
                   <div className="flex items-center gap-2 mb-2">
                     {selectedStation.logo_url ? (
@@ -493,16 +601,21 @@ export default function MapPage() {
                       </div>
                     )}
                     <div>
-                      <h3 className="font-bold text-lg text-green-700">{selectedStation.displayName}</h3>
+                      <h3 className="font-bold text-lg text-green-700">
+                        {selectedStation.displayName}
+                      </h3>
                       <span className="text-xs px-2 py-0.5 bg-gray-100 rounded-full">
                         {selectedStation.Distributor || "ไม่ระบุผู้ให้บริการ"}
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-gray-600 text-sm">{selectedStation.Address}</p>
                   <p className="text-gray-600 text-sm">
-                    {selectedStation.Subdistrict}, {selectedStation.District}, {selectedStation.Province}
+                    {selectedStation.Address}
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    {selectedStation.Subdistrict}, {selectedStation.District},{" "}
+                    {selectedStation.Province}
                   </p>
 
                   <div className="my-3 border-t border-gray-100 pt-3"></div>
@@ -512,7 +625,9 @@ export default function MapPage() {
                       ประเภทการชาร์จ
                     </span>
                     <p className="text-gray-700">
-                      {selectedStation.connectionTypes.map((ct) => `${ct.type} (${ct.count})`).join(", ") || "-"}
+                      {selectedStation.connectionTypes
+                        .map((ct) => `${ct.type} (${ct.count})`)
+                        .join(", ") || "-"}
                     </p>
                   </div>
 
@@ -530,7 +645,10 @@ export default function MapPage() {
                       ]
                         .filter((power) => power.value > 0)
                         .map((power, i) => (
-                          <span key={i} className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full text-xs">
+                          <span
+                            key={i}
+                            className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full text-xs"
+                          >
                             {power.label} × {power.value}
                           </span>
                         ))}
@@ -541,7 +659,9 @@ export default function MapPage() {
                   <div className="mt-3 pt-3 border-t border-gray-100">
                     <div className="flex items-center gap-1 mb-2">
                       <DollarSign size={14} className="text-green-600" />
-                      <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs">อัตราค่าไฟฟ้า</span>
+                      <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full text-xs">
+                        อัตราค่าไฟฟ้า
+                      </span>
                       <Clock size={14} className="ml-1 text-blue-600" />
                     </div>
                     {renderPowerCostInfo(selectedStation)}
@@ -565,7 +685,7 @@ export default function MapPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function LoadingScreen({ message }) {
@@ -576,7 +696,7 @@ function LoadingScreen({ message }) {
         <p className="mt-4 text-gray-600">{message}</p>
       </div>
     </div>
-  )
+  );
 }
 
 function ErrorScreen({ error }) {
@@ -596,6 +716,5 @@ function ErrorScreen({ error }) {
         </button>
       </div>
     </div>
-  )
+  );
 }
-
