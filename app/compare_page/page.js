@@ -24,12 +24,8 @@ export default function Compare() {
 
           const uniqueBrands = [...new Set(data.map((car) => car.Brand))];
 
-          const midIndex = Math.ceil(uniqueBrands.length / 2);
-          const uniqueBrands1 = uniqueBrands.slice(0, midIndex);
-          const uniqueBrands2 = uniqueBrands.slice(midIndex);
-
-          setBrands1(uniqueBrands1);
-          setBrands2(uniqueBrands2);
+          setBrands1(uniqueBrands);
+          setBrands2(uniqueBrands);
         }
       })
       .catch((error) => console.error("Error fetching data:", error));
