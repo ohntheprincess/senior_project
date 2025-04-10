@@ -1175,32 +1175,75 @@ export default function CalculatePage() {
                         className="mt-1 p-2 w-full border border-gray-300 rounded text-black"
                       />
                     </div>
-                    <div className="text-gray-600">
-                      <label className="block text-gray-600">
-                        เลือกประเภทเชื้อเพลิง
-                      </label>
-                      <select
-                        value={electricityCost}
-                        onChange={(e) => {
-                          console.log("Selected fuel price:", e.target.value);
-                          setElectricityCost(Number(e.target.value));
-                        }}
-                        className="border p-2 rounded-md w-full"
-                      >
-                        <option value="">เลือกประเภทเชื้อเพลิง</option>
-                        {electricTypeData.map((electric) => (
-                          <option
-                            key={electric.Power_ID}
-                            value={
-                              electric.Peak_Rates__including_VAT___baht_unit_
-                            }
+                    <div className="my-4 text-gray-600">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="mr-1">
+                          <label className="block text-gray-600">
+                            เลือกผู้ให้บริการชาร์จ
+                          </label>
+                          <select
+                            value={chargingStation}
+                            onChange={(e) => {
+                              console.log(
+                                "Selected fuel price:",
+                                e.target.value
+                              );
+                              setChargingStation(e.target.value);
+                            }}
+                            className="mt-1 border p-2 rounded-md w-full"
                           >
-                            {electric.Type_Power} -{" "}
-                            {electric.Peak_Rates__including_VAT___baht_unit_}{" "}
-                            บาท
-                          </option>
-                        ))}
-                      </select>
+                            <option value="">เลือกผู้ให้บริการชาร์จ</option>
+                            {electricTypeData
+                              .map((electric) => electric.Distributor)
+                              .filter(
+                                (value, index, self) =>
+                                  self.indexOf(value) === index
+                              )
+                              .map((distributor, index) => (
+                                <option key={index} value={distributor}>
+                                  {distributor}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                        <div className="mxl-1">
+                          <label className="block text-gray-600">
+                            เลือกอัตรากำลังไฟฟ้า
+                          </label>
+                          <select
+                            value={electricityCost}
+                            onChange={(e) => {
+                              console.log(
+                                "Selected fuel price:",
+                                e.target.value
+                              );
+                              setElectricityCost(Number(e.target.value));
+                            }}
+                            className="mt-1 border p-2 rounded-md w-full"
+                          >
+                            <option value="">เลือกอัตรากำลังไฟฟ้า</option>
+                            {electricTypeData
+                              .filter(
+                                (electric) =>
+                                  electric.Distributor === chargingStation
+                              )
+                              .map((electric) => (
+                                <option
+                                  key={electric.Power_ID}
+                                  value={
+                                    electric.Peak_Rates__including_VAT___baht_unit_
+                                  }
+                                >
+                                  {electric.Type_Power} |{" "}
+                                  {
+                                    electric.Peak_Rates__including_VAT___baht_unit_
+                                  }{" "}
+                                  บาท
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -1457,9 +1500,9 @@ export default function CalculatePage() {
                 <div className="flex justify-center">
                   <div className="mt-2 border border-gray-300 rounded-lg p-2 w-1/2 bg-mainblue text-center shadow-md">
                     <h6 className="text-base text-white mb-2 font-prompt">
-                      ค่าใช้จ่ายรถยนต์ไฟฟ้า{" "}
+                      ค่าใช้จ่ายรถยนต์น้ำมัน
                       <p className="text-lg text-mainblue bg-white rounded-lg">
-                        {calculateElectricCost().toFixed(2)} บาท
+                        {calculateFuelCost().toFixed(2)} บาท
                       </p>
                     </h6>
                   </div>
@@ -1467,9 +1510,9 @@ export default function CalculatePage() {
                 <div className="flex justify-center">
                   <div className="mt-2 border border-gray-300 rounded-lg p-2 w-1/2 bg-mainblue text-center shadow-md">
                     <h6 className="text-base text-white mb-2 font-prompt">
-                      ค่าใช้จ่ายรถยนต์น้ำมัน
+                      ค่าใช้จ่ายรถยนต์ไฟฟ้า{" "}
                       <p className="text-lg text-mainblue bg-white rounded-lg">
-                        {calculateFuelCost().toFixed(2)} บาท
+                        {calculateElectricCost().toFixed(2)} บาท
                       </p>
                     </h6>
                   </div>
